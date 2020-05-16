@@ -26,11 +26,6 @@ public class StudentServiceImplementation implements StudentService {
 	}
 
 	@Override
-	public BorrowBook bookBorrow(BorrowBook books) {
-		return dao.bookBorrow(books);
-	}
-
-	@Override
 	public BookBean searchBookById(int bookId) {
 		return dao.searchBookById(bookId);
 	}
@@ -48,5 +43,10 @@ public class StudentServiceImplementation implements StudentService {
 	@Override
 	public List<BookBean> getBooksInfo() {
 		return dao.getBooksInfo();
+	}
+	
+	@Override
+	public boolean bookReturn(int userId, int bookId) {
+		return dao.bookReturn(userId, bookId);
 	}
 }

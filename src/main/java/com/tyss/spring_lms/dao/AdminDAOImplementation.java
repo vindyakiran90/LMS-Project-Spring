@@ -1,12 +1,12 @@
 package com.tyss.spring_lms.dao;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -18,7 +18,7 @@ import com.tyss.spring_lms.beans.BorrowBook;
 import com.tyss.spring_lms.beans.IssueBook;
 import com.tyss.spring_lms.beans.RequestBook;
 import com.tyss.spring_lms.beans.UserBean;
-import com.tyss.spring_lms.exception.CustomException;
+import com.tyss.spring_lms.exception.LMSException;
 
 @Repository
 public class AdminDAOImplementation implements AdminDAO {
@@ -40,7 +40,7 @@ public class AdminDAOImplementation implements AdminDAO {
 				transaction.commit();
 				return true;
 			} else {
-				throw new CustomException("Unable to delete the book, since it is issued to the student\n "
+				throw new LMSException("Unable to delete the book, since it is issued to the student\n "
 						+ "Once it is returned, can delete the book");
 			}
 		} catch (Exception e) {
@@ -59,8 +59,7 @@ public class AdminDAOImplementation implements AdminDAO {
 		BorrowBook borrowBook = new BorrowBook();
 		RequestBook requestBook = new RequestBook();
 		IssueBook issueBook = new IssueBook();
-		StudentDAO studentDAO = new StudentDAOImplementation();
-		
+
 		try {
 			manager = factory.createEntityManager();
 			transaction = manager.getTransaction();
@@ -99,17 +98,17 @@ public class AdminDAOImplementation implements AdminDAO {
 							if(borrowBook == null || borrowBook.getFees() == 0) {
 								bookBean.setNumberOfAvailableBooks(bookBean.getNumberOfAvailableBooks() - 1);
 								bookBean.setNumberOfIssuedBooks(bookBean.getNumberOfIssuedBooks() + 1);
-								
+
 								LocalDate currentDate = LocalDate.now();
 								issueBook.setIssueDate(currentDate);
 								issueBook.setBookId(bookId);
 								issueBook.setUserId(userId);
 								LocalDate returnDate = LocalDate.now().plusDays(10);
 								issueBook.setReturnDate(returnDate);
-								
+
 								manager.persist(issueBook);
 								manager.persist(bookBean);
-														
+
 								BorrowBook borrowBook1 = new BorrowBook();
 								borrowBook1.setBookId(bookId);
 								borrowBook1.setDateOfBorrowed(currentDate);
@@ -117,11 +116,10 @@ public class AdminDAOImplementation implements AdminDAO {
 								borrowBook1.setUserId(userId);
 								borrowBook1.setFees(borrowBook1.getFees() + 0.00);
 								borrowBook1.setNoOfBooksBorrowed(borrowBook1.getNoOfBooksBorrowed() + 1);
-																
-								BorrowBook borrowBook2 = studentDAO.bookBorrow(borrowBook1);
-								
-								
-								if(borrowBook2 != null) {
+
+								manager.persist(borrowBook1);
+
+								if(requestBook != null) {
 
 									String jpql3 = "select r from RequestBook r where r.userId = :userId and r.bookId = :bookId";
 									Query query3 = manager.createQuery(jpql3); 
@@ -133,19 +131,19 @@ public class AdminDAOImplementation implements AdminDAO {
 								transaction.commit();
 
 							} else {
-								throw new CustomException("Fees is unclear");
+								throw new LMSException("Fees is unclear");
 							}
 						} else {
-							throw new CustomException("Number of books borrowed limit exceeded");
+							throw new LMSException("Number of books borrowed limit exceeded");
 						}
 					} else {
-						throw new CustomException("Book does not exist");
+						throw new LMSException("Book does not exist");
 					}
 				} else {
-					throw new CustomException("User does not exist");
+					throw new LMSException("User does not exist");
 				}
 			} else {
-				throw new CustomException("Book is not requested from the user");
+				throw new LMSException("Book is not requested from the user");
 			}
 			return true;
 		} catch (Exception e) {
@@ -236,58 +234,6 @@ public class AdminDAOImplementation implements AdminDAO {
 		}
 	}
 
-	@Override
-	public boolean bookReturn(int userId, int bookId) {
-		EntityManager manager = null;
-		EntityTransaction transaction = null;
-		BorrowBook borrowBook = new BorrowBook();
-		try {
-			manager = factory.createEntityManager();
-			transaction = manager.getTransaction();
-			transaction.begin();
-
-			String jpql= "select e from BorrowBook e where e.userId = :userId and e.bookId = :bookId";
-			Query query = manager.createQuery(jpql); 
-			query.setParameter("userId", userId);
-			query.setParameter("bookId", bookId);
-			borrowBook = (BorrowBook) query.getSingleResult();
-			LocalDate returnDate = borrowBook.getDateOfReturn();
-			LocalDate currentDate = LocalDate.now();
-			long noOfDaysBetween = ChronoUnit.DAYS.between(returnDate, currentDate);
-			System.out.println(noOfDaysBetween);
-			if(noOfDaysBetween > 0) {
-				borrowBook.setFees(noOfDaysBetween * 5);
-				transaction.commit();
-				System.out.println("Student should pay "+borrowBook.getFees()+" Rupees");
-				throw new CustomException("Student should pay the fine for delaying to return the book");
-			} else {
-				String jpql1 = "delete from BorrowBook e where e.bookId = :bookId and e.userId = :userId";
-				Query query1 = manager.createQuery(jpql1); 
-				query1.setParameter("bookId", bookId);
-				query1.setParameter("userId", userId);
-				int count = query1.executeUpdate();
-				if(count != 0) {
-					String jpql2 = "delete from IssueBook e where e.bookId = :bookId and e.userId = :userId";
-					Query query2 = manager.createQuery(jpql2); 
-					query2.setParameter("bookId", bookId);
-					query2.setParameter("userId", userId);
-					int count1 = query2.executeUpdate();
-					if(count1 != 0) {
-						BookBean bookBean = manager.find(BookBean.class, borrowBook.getBookId());
-						bookBean.setNumberOfIssuedBooks(bookBean.getNumberOfIssuedBooks() - 1);
-						bookBean.setNumberOfAvailableBooks(bookBean.getNumberOfAvailableBooks() + 1);
-						transaction.commit();
-					}
-				}
-				return true;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			manager.close();
-		}
-	}
 
 	@Override
 	public List<IssueBook> issuedBooks() {
@@ -300,6 +246,36 @@ public class AdminDAOImplementation implements AdminDAO {
 			return beans;
 		} catch (Exception e) {
 			return null;
+		} finally {
+			manager.close();
+		}
+	}
+
+	@Override
+	public boolean isBookReceived(int userId, int bookId) {
+		EntityManager manager = null;
+		BorrowBook borrowBook = new BorrowBook();
+		try {
+			manager = factory.createEntityManager();
+
+			String jpql= "select e from BorrowBook e where e.userId = :userId and e.bookId = :bookId";
+			Query query = manager.createQuery(jpql); 
+			query.setParameter("userId", userId);
+			query.setParameter("bookId", bookId);
+			try {
+				borrowBook = (BorrowBook) query.getSingleResult();
+			}catch (NoResultException  e) {
+			}
+
+			if(borrowBook != null && borrowBook.getFees() != 0) {
+				System.out.println("Student should pay "+borrowBook.getFees()+" Rupees");
+				throw new LMSException("Book is not received due to Student should pay the fine for delaying to return the book");
+			} 
+			return true;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		} finally {
 			manager.close();
 		}

@@ -133,19 +133,18 @@ public class AdminController {
 		return lmsResponse;
 	}
 	
-	@PostMapping(path="/returnBook", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, 
+	@PostMapping(path="/isBookReceived", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, 
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
-	public LMSResponse returnBook(@RequestBody int userId, int bookId) {
-		boolean isReturned = adminService.bookReturn(userId, bookId);
+	public LMSResponse isReceived(int userId, int bookId) {
+		boolean isBookReceived = adminService.isBookReceived(userId, bookId);
 		LMSResponse lmsResponse = new LMSResponse();
-		if(isReturned) {
-			lmsResponse.setMessage("Book returned successfully");
+		if(isBookReceived) {
+			lmsResponse.setMessage("Book received successfully");
 		} else {
 			lmsResponse.setError(true);
-			lmsResponse.setMessage("Book return is unsuccessful");
+			lmsResponse.setMessage("Book is not received");
 		}
 		return lmsResponse;
 	}
-
 }

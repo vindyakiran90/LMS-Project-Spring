@@ -49,22 +49,6 @@ public class StudentController {
 		return lmsResponse;
 	}
 	
-	@PostMapping(path="/bookBorrow", produces = {MediaType.APPLICATION_JSON_VALUE, 
-			MediaType.APPLICATION_XML_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
-	//@ResponseBody
-	public LMSResponse bookBorrow(BorrowBook book) {
-		BorrowBook borrowBook = studentService.bookBorrow(book);
-		LMSResponse lmsResponse = new LMSResponse();
-		if(borrowBook.getBookId() != 0) {
-			lmsResponse.setMessage("Book borrowed successfully");
-			lmsResponse.setBorrowBook(borrowBook);
-		} else {
-			lmsResponse.setError(true);
-			lmsResponse.setMessage("Book is not borrowed");
-		}
-		return lmsResponse;
-	}
-	
 	@GetMapping(path="/searchBookById", produces = {MediaType.APPLICATION_JSON_VALUE, 
 			MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
@@ -128,4 +112,20 @@ public class StudentController {
 		}
 		return lmsResponse;
 	}
+	
+	@PostMapping(path="/returnBook", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, 
+			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+	//@ResponseBody
+	public LMSResponse returnBook(int userId, int bookId) {
+		boolean isReturned = studentService.bookReturn(userId, bookId);
+		LMSResponse lmsResponse = new LMSResponse();
+		if(isReturned) {
+			lmsResponse.setMessage("Book returned successfully");
+		} else {
+			lmsResponse.setError(true);
+			lmsResponse.setMessage("Book return is unsuccessful");
+		}
+		return lmsResponse;
+	}
+
 }

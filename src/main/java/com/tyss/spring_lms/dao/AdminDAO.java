@@ -15,5 +15,5 @@ public interface AdminDAO {
 	List<RequestBook> showRequest();
 	List<UserBean> showUsers();
 	List<IssueBook> issuedBooks();
-	boolean bookReturn(int userId, int bookId);
+	boolean isBookReceived(int userId, int bookId);
 }

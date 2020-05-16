@@ -1,6 +1,5 @@
 package com.tyss.spring_lms.dao_test;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -32,19 +31,6 @@ public class StudentDAOTest {
 	}
 	
 	@Test
-	public void testBookBorrow() {
-		BorrowBook borrowBook = new BorrowBook();
-		borrowBook.setBookId(2001);
-		borrowBook.setUserId(10002);
-		borrowBook.setNoOfBooksBorrowed(1);
-		borrowBook.setDateOfBorrowed(LocalDate.now());
-		borrowBook.setDateOfReturn(LocalDate.now().plusDays(10));
-		borrowBook.setFees(0.0);
-		BorrowBook borrowBook1 = dao.bookBorrow(borrowBook);
-		Assertions.assertNotNull(borrowBook1);
-	}
-	
-	@Test
 	public void testSearchBookById() {
 		int id = 2001;
 		BookBean bookBean = dao.searchBookById(id);
@@ -69,5 +55,13 @@ public class StudentDAOTest {
 	public void testGetBooksInfo() {
 		List<BookBean> bookBean = dao.getBooksInfo();
 		Assertions.assertNotNull(bookBean);
+	}
+	
+	@Test
+	public void testBookReturn() {
+		int userId = 10002;
+		int bookId = 2001;
+		boolean status = dao.bookReturn(userId, bookId);
+		Assertions.assertTrue(status);
 	}
 }

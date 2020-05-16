@@ -48,9 +48,10 @@ public class AdminServiceTest {
 
 
 	@Test 
-	public void testIssueBook() { 
-		
-		boolean status = adminService.issueBook(1003, 14001);
+	public void testIssueBook() {
+		int userId = 14001;
+		int bookId = 1003;
+		boolean status = adminService.issueBook(userId, bookId);
 		Assertions.assertTrue(status); 
 	}
 
@@ -81,10 +82,10 @@ public class AdminServiceTest {
 	}
 	
 	@Test
-	public void testBookReturn() {
+	public void testIsBookReceived() {
 		int userId = 10002;
 		int bookId = 1000;
-		boolean status = adminService.bookReturn(userId, bookId);
+		boolean status = adminService.isBookReceived(userId, bookId);
 		Assertions.assertTrue(status);
 	}
 }

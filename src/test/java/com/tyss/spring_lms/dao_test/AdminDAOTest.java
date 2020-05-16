@@ -48,10 +48,13 @@ public class AdminDAOTest {
 
 
 	@Test 
-	public void testIssueBook() { 
-		boolean status = dao.issueBook(3002, 14003);
+	public void testIssueBook() {
+		int userId = 14001;
+		int bookId = 1003;
+		boolean status = dao.issueBook(userId, bookId);
 		Assertions.assertTrue(status); 
 	}
+
 
 
 	@Test public void testUpdateBook() { 
@@ -80,10 +83,10 @@ public class AdminDAOTest {
 	}
 	
 	@Test
-	public void testBookReturn() {
+	public void testIsBookReceived() {
 		int userId = 10002;
-		int bookId = 2001;
-		boolean status = dao.bookReturn(userId, bookId);
+		int bookId = 1000;
+		boolean status = dao.isBookReceived(userId, bookId);
 		Assertions.assertTrue(status);
 	}
 }

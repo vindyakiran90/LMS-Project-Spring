@@ -48,12 +48,12 @@ public class AdminServiceImplementation implements AdminService {
 	}
 
 	@Override
-	public boolean bookReturn(int userId, int bookId) {
-		return dao.bookReturn(userId, bookId);
+	public List<IssueBook> issuedBooks() {
+		return dao.issuedBooks();
 	}
 
 	@Override
-	public List<IssueBook> issuedBooks() {
-		return dao.issuedBooks();
+	public boolean isBookReceived(int userId, int bookId) {
+		return dao.isBookReceived(userId, bookId);
 	}
 }
