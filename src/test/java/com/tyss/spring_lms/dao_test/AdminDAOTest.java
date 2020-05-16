@@ -1,6 +1,5 @@
 package com.tyss.spring_lms.dao_test;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -50,12 +49,7 @@ public class AdminDAOTest {
 
 	@Test 
 	public void testIssueBook() { 
-		IssueBook issueBook = new IssueBook();
-		issueBook.setBookId(3002); 
-		issueBook.setIssueDate(LocalDate.now());
-		issueBook.setReturnDate(LocalDate.now().plusDays(10));
-		issueBook.setUserId(14003); 
-		boolean status = dao.issueBook(issueBook);
+		boolean status = dao.issueBook(3002, 14003);
 		Assertions.assertTrue(status); 
 	}
 
@@ -79,6 +73,12 @@ public class AdminDAOTest {
 		Assertions.assertNotNull(requestBooks);
 	}
 
+	@Test
+	public void testIssuedBooks() {
+		List<IssueBook> issuedBooks = dao.issuedBooks();
+		Assertions.assertNotNull(issuedBooks);
+	}
+	
 	@Test
 	public void testBookReturn() {
 		int userId = 10002;

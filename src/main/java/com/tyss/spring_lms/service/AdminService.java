@@ -11,9 +11,10 @@ public interface AdminService {
 	
 	boolean addBook(BookBean bean);
 	boolean deleteBook(int bookId);
-	boolean issueBook(IssueBook bean);
+	boolean issueBook(int userId, int bookId);
 	boolean updateBook(String bookTitle, int numberOfBooks);
 	List<RequestBook> showRequest();
 	List<UserBean> showUsers();
+	List<IssueBook> issuedBooks();
 	boolean bookReturn(int userId, int bookId);
 }

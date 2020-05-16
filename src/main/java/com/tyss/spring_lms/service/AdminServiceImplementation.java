@@ -28,8 +28,8 @@ public class AdminServiceImplementation implements AdminService {
 	}
 
 	@Override
-	public boolean issueBook(IssueBook bean) {
-		return dao.issueBook(bean);
+	public boolean issueBook(int userId, int bookId) {
+		return dao.issueBook(userId, bookId);
 	}
 
 	@Override
@@ -50,5 +50,10 @@ public class AdminServiceImplementation implements AdminService {
 	@Override
 	public boolean bookReturn(int userId, int bookId) {
 		return dao.bookReturn(userId, bookId);
+	}
+
+	@Override
+	public List<IssueBook> issuedBooks() {
+		return dao.issuedBooks();
 	}
 }

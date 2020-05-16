@@ -16,4 +16,5 @@ public class LMSResponse {
 	private BorrowBook borrowBook;
 	private List<RequestBook> requestBook;
 	private List<UserBean> userBean;
+	private List<IssueBook> issueBook;
 }

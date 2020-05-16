@@ -73,12 +73,12 @@ public class AdminController {
 	@PostMapping(path="/issueBook", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, 
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
-	public LMSResponse issueBook(@RequestBody IssueBook issueBook) {
-		boolean isIssued = adminService.issueBook(issueBook);
+	public LMSResponse issueBook(int userId, int bookId) {
+		boolean isIssued = adminService.issueBook(userId, bookId);
 		LMSResponse lmsResponse = new LMSResponse();
 		if(isIssued) {
 			lmsResponse.setMessage("Book issued successfully");
-		} else {
+		} else {                                      
 			lmsResponse.setError(true);
 			lmsResponse.setMessage("Book issuing is unsuccessful");
 		}
@@ -117,6 +117,22 @@ public class AdminController {
 		return lmsResponse;
 	}
 
+	@GetMapping(path="/showIssuedBooks", produces = {MediaType.APPLICATION_JSON_VALUE, 
+			MediaType.APPLICATION_XML_VALUE})
+	//@ResponseBody
+	public LMSResponse showIssuedBooks() {
+		List<IssueBook> issueBook =  adminService.issuedBooks();
+		LMSResponse lmsResponse = new LMSResponse();
+		if(!issueBook.isEmpty()) {
+			lmsResponse.setMessage("Books are issued");
+			lmsResponse.setIssueBook(issueBook);
+		} else {
+			lmsResponse.setError(true);
+			lmsResponse.setMessage("Books are not issued");
+		}
+		return lmsResponse;
+	}
+	
 	@PostMapping(path="/returnBook", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, 
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody

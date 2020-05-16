@@ -1,6 +1,5 @@
 package com.tyss.spring_lms.service_test;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -50,12 +49,8 @@ public class AdminServiceTest {
 
 	@Test 
 	public void testIssueBook() { 
-		IssueBook issueBook = new IssueBook();
-		issueBook.setBookId(1003); 
-		issueBook.setIssueDate(LocalDate.now());
-		issueBook.setReturnDate(LocalDate.now().plusDays(10));
-		issueBook.setUserId(11113); 
-		boolean status = adminService.issueBook(issueBook);
+		
+		boolean status = adminService.issueBook(1003, 14001);
 		Assertions.assertTrue(status); 
 	}
 
@@ -78,7 +73,13 @@ public class AdminServiceTest {
 		List<UserBean> requestBooks = adminService.showUsers();
 		Assertions.assertNotNull(requestBooks);
 	}
-
+	
+	@Test
+	public void testIssuedBooks() {
+		List<IssueBook> issuedBooks = adminService.issuedBooks();
+		Assertions.assertNotNull(issuedBooks);
+	}
+	
 	@Test
 	public void testBookReturn() {
 		int userId = 10002;
