@@ -1,7 +1,7 @@
 package com.tyss.spring_lms.beans;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -33,9 +37,13 @@ public class IssueBook implements Serializable {
 	@Column
 	private int userId;
 	@Column
-	private LocalDate issueDate;
+	@Temporal(TemporalType.DATE)
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date issueDate;
 	@Column
-	private LocalDate returnDate;
+	@Temporal(TemporalType.DATE)
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date returnDate;
 
 	@Override
 	public String toString() {

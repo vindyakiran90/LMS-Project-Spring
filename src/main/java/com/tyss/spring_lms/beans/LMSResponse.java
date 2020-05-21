@@ -12,9 +12,11 @@ public class LMSResponse {
 	private boolean error;
 	private String message;
 	private BookBean bookBean;
+	private UserBean userBean;
 	private List<BookBean> bookList;
 	private BorrowBook borrowBook;
-	private List<RequestBook> requestBook;
-	private List<UserBean> userBean;
-	private List<IssueBook> issueBook;
+	private List<RequestBook> requestBookList;
+	private List<UserBean> userList;
+	private List<IssueBook> issueBookList;
+	private List<BorrowBook> borrowBookList;
 }

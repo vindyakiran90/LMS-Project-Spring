@@ -1,7 +1,8 @@
 package com.tyss.spring_lms.dao;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -212,12 +213,18 @@ public class StudentDAOImplementation implements StudentDAO {
 			query.setParameter("userId", userId);
 			query.setParameter("bookId", bookId);
 			borrowBook = (BorrowBook) query.getSingleResult();
-			LocalDate returnDate = borrowBook.getDateOfReturn();
-			LocalDate currentDate = LocalDate.now();
-			long noOfDaysBetween = ChronoUnit.DAYS.between(returnDate, currentDate);
-			System.out.println(noOfDaysBetween);
-			if(noOfDaysBetween > 0) {
-				borrowBook.setFees(noOfDaysBetween * 5);
+			
+			Date returnDate = (Date) borrowBook.getDateOfReturn();
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar calendar =  Calendar.getInstance();
+			String date = sdf.format(calendar.getTime());
+			Date currentDate = java.sql.Date.valueOf(date);
+
+			long noOfDaysBetween = currentDate.getTime() - returnDate.getTime();
+			float daysBetween = (noOfDaysBetween / (1000 * 60 * 60 * 24));
+			if(daysBetween > 0) {
+				borrowBook.setFees(daysBetween * 5);
 				transaction.commit();
 				System.out.println("Student should pay "+borrowBook.getFees()+" Rupees");
 				throw new LMSException("Student should pay the fine for delaying to return the book");

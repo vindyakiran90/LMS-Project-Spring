@@ -4,29 +4,36 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tyss.spring_lms.beans.BookBean;
 import com.tyss.spring_lms.beans.BorrowBook;
+import com.tyss.spring_lms.beans.IssueBook;
 import com.tyss.spring_lms.beans.LMSResponse;
+import com.tyss.spring_lms.beans.RequestBook;
 import com.tyss.spring_lms.service.StudentService;
 
+@CrossOrigin(origins= "*", allowedHeaders="*")
 @RestController
 public class StudentController {
 
 	@Autowired
 	private StudentService studentService;
 
-	@GetMapping(path="/userBookborrowedList", produces = {MediaType.APPLICATION_JSON_VALUE, 
+	@PostMapping(path="/userBookborrowedList", produces = {MediaType.APPLICATION_JSON_VALUE, 
 			MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
-	public LMSResponse borrowedBook(int userId) {
-		List<BorrowBook> borrowBook= studentService.borrowedBook(userId);
+	public LMSResponse borrowedBook(@RequestBody BorrowBook borrowBook) {
+		List<BorrowBook> borrowBookList= studentService.borrowedBook(borrowBook.getUserId());
 		LMSResponse lmsResponse = new LMSResponse();
-		if(!borrowBook.isEmpty()) {
+		if(!borrowBookList.isEmpty()) {
 			lmsResponse.setMessage("Book borrowed successfully");
+			lmsResponse.setBorrowBookList(borrowBookList);
 		} else {
 			lmsResponse.setError(true);
 			lmsResponse.setMessage("Book is not borrowed");
@@ -34,11 +41,11 @@ public class StudentController {
 		return lmsResponse;
 	}
 
-	@GetMapping(path="/requestBook", produces = {MediaType.APPLICATION_JSON_VALUE, 
+	@PostMapping(path="/requestBook", produces = {MediaType.APPLICATION_JSON_VALUE, 
 			MediaType.APPLICATION_XML_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
-	public LMSResponse requestBook(int userId, int bookId) {
-		boolean isRequested = studentService.bookRequest(userId, bookId);
+	public LMSResponse requestBook(@RequestBody RequestBook requestBook) {
+		boolean isRequested = studentService.bookRequest(requestBook.getUserId(), requestBook.getBookId());
 		LMSResponse lmsResponse = new LMSResponse();
 		if(isRequested) {
 			lmsResponse.setMessage("Book requested successfully");
@@ -73,7 +80,7 @@ public class StudentController {
 		LMSResponse lmsResponse = new LMSResponse();
 		if(bookBean != null) {
 			lmsResponse.setMessage("Book is available");
-			lmsResponse.setBookBean(bookBean);
+			lmsResponse.setBookBean(bookBean); 
 		} else {
 			lmsResponse.setError(true);
 			lmsResponse.setMessage("Book is not available");
@@ -116,8 +123,8 @@ public class StudentController {
 	@PostMapping(path="/returnBook", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, 
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
-	public LMSResponse returnBook(int userId, int bookId) {
-		boolean isReturned = studentService.bookReturn(userId, bookId);
+	public LMSResponse returnBook(@RequestBody BorrowBook borrowBook) {
+		boolean isReturned = studentService.bookReturn(borrowBook.getUserId(), borrowBook.getBookId());
 		LMSResponse lmsResponse = new LMSResponse();
 		if(isReturned) {
 			lmsResponse.setMessage("Book returned successfully");

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import com.tyss.spring_lms.beans.RequestBook;
 import com.tyss.spring_lms.beans.UserBean;
 import com.tyss.spring_lms.service.AdminService;
 
+@CrossOrigin(origins= "*", allowedHeaders="*")
 @RestController
 public class AdminController {
 
@@ -55,11 +57,10 @@ public class AdminController {
 		return lmsResponse;
 	}
 
-
 	@PutMapping(path="/updateBook", produces = MediaType.APPLICATION_JSON_VALUE)
 	//@ResponseBody
-	public LMSResponse updateBook(String bookTitle, int numberOfBooks) {
-		boolean isUpdated = adminService.updateBook(bookTitle, numberOfBooks);
+	public LMSResponse updateBook(@RequestBody BookBean bean) {
+		boolean isUpdated = adminService.updateBook(bean.getBookTitle(), bean.getNumberOfBooks());
 		LMSResponse lmsResponse = new LMSResponse();
 		if(isUpdated) {
 			lmsResponse.setMessage("Book updated successfully");
@@ -70,11 +71,11 @@ public class AdminController {
 		return lmsResponse;
 	}
 
-	@PostMapping(path="/issueBook", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, 
+	@PostMapping(path="/issueBook", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}, 
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
-	public LMSResponse issueBook(int userId, int bookId) {
-		boolean isIssued = adminService.issueBook(userId, bookId);
+	public LMSResponse issueBook(@RequestBody RequestBook requestBook) {
+		boolean isIssued = adminService.issueBook(requestBook.getUserId(), requestBook.getBookId());
 		LMSResponse lmsResponse = new LMSResponse();
 		if(isIssued) {
 			lmsResponse.setMessage("Book issued successfully");
@@ -89,11 +90,11 @@ public class AdminController {
 			MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
 	public LMSResponse showRequest() {
-		List<RequestBook> requestBook =  adminService.showRequest();
+		List<RequestBook> requestBookList =  adminService.showRequest();
 		LMSResponse lmsResponse = new LMSResponse();
-		if(!requestBook.isEmpty()) {
+		if(!requestBookList.isEmpty()) {
 			lmsResponse.setMessage("Books are requested");
-			lmsResponse.setRequestBook(requestBook);
+			lmsResponse.setRequestBookList(requestBookList);
 		} else {
 			lmsResponse.setError(true);
 			lmsResponse.setMessage("Books are not requested");
@@ -105,11 +106,11 @@ public class AdminController {
 			MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
 	public LMSResponse showStudentUsers() {
-		List<UserBean> userBean =  adminService.showUsers();
+		List<UserBean> userList =  adminService.showUsers();
 		LMSResponse lmsResponse = new LMSResponse();
-		if(!userBean.isEmpty()) {
+		if(!userList.isEmpty()) {
 			lmsResponse.setMessage("Users are available");
-			lmsResponse.setUserBean(userBean);
+			lmsResponse.setUserList(userList);
 		} else {
 			lmsResponse.setError(true);
 			lmsResponse.setMessage("Users are not available");
@@ -121,11 +122,11 @@ public class AdminController {
 			MediaType.APPLICATION_XML_VALUE})
 	//@ResponseBody
 	public LMSResponse showIssuedBooks() {
-		List<IssueBook> issueBook =  adminService.issuedBooks();
+		List<IssueBook> issueBookList =  adminService.issuedBooks();
 		LMSResponse lmsResponse = new LMSResponse();
-		if(!issueBook.isEmpty()) {
+		if(!issueBookList.isEmpty()) {
 			lmsResponse.setMessage("Books are issued");
-			lmsResponse.setIssueBook(issueBook);
+			lmsResponse.setIssueBookList(issueBookList);
 		} else {
 			lmsResponse.setError(true);
 			lmsResponse.setMessage("Books are not issued");

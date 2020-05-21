@@ -1,6 +1,8 @@
 package com.tyss.spring_lms.dao;
 
-import java.time.LocalDate;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -99,11 +101,19 @@ public class AdminDAOImplementation implements AdminDAO {
 								bookBean.setNumberOfAvailableBooks(bookBean.getNumberOfAvailableBooks() - 1);
 								bookBean.setNumberOfIssuedBooks(bookBean.getNumberOfIssuedBooks() + 1);
 
-								LocalDate currentDate = LocalDate.now();
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+								Calendar calendar =  Calendar.getInstance();
+								String date = sdf.format(calendar.getTime());
+								Date currentDate = java.sql.Date.valueOf(date);
 								issueBook.setIssueDate(currentDate);
+								
+								
 								issueBook.setBookId(bookId);
 								issueBook.setUserId(userId);
-								LocalDate returnDate = LocalDate.now().plusDays(10);
+								
+								calendar.add(Calendar.DAY_OF_MONTH, 10);
+								String date1 = sdf.format(calendar.getTime());
+								Date returnDate =  java.sql.Date.valueOf(date1);
 								issueBook.setReturnDate(returnDate);
 
 								manager.persist(issueBook);
@@ -196,6 +206,7 @@ public class AdminDAOImplementation implements AdminDAO {
 			manager = factory.createEntityManager();
 			transaction = manager.getTransaction();
 			transaction.begin();
+			bean.setNumberOfAvailableBooks(bean.getNumberOfBooks());
 			manager.persist(bean);
 			transaction.commit();
 			return true;
